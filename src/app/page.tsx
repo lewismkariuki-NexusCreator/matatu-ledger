@@ -560,30 +560,89 @@ export default function HomeView() {
 
           {/* TAB 3: ACTIVE DRIVERS / MY FLEET */}
           {activeTab === 'fleet' && (
-            <div className="space-y-6 bg-gray-900/40 border border-white/5 rounded-3xl p-6 shadow-2xl">
-              <div>
-                <h3 className="font-extrabold text-base text-white">Active Fleet Drivers</h3>
-                <span className="text-xs text-gray-400 font-medium">Verify driver contacts, target statuses, and credentials</span>
-              </div>
-              <div className="grid grid-cols-3 gap-5">
-                {matatus.map((m, idx) => (
-                  <div key={idx} className="bg-white/5 border border-white/5 rounded-2xl p-5 space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-400 flex items-center justify-center font-bold">
-                        {m.driverName.charAt(0)}
-                      </div>
-                      <div>
-                        <strong className="text-sm block">{m.driverName}</strong>
-                        <span className="text-[10px] text-gray-400">{m.reg} • {m.status}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-1.5 text-xs text-gray-400">
-                      <div className="flex justify-between"><span>Assigned Route</span><span className="text-white font-medium">{m.route}</span></div>
-                      <div className="flex justify-between"><span>Daily Target</span><span className="text-white font-medium">KES {m.dailyTarget.toLocaleString()}</span></div>
-                      <div className="flex justify-between"><span>Vetting Status</span><span className="text-emerald-400 font-bold">CLEARED (Good Conduct)</span></div>
+            <div className="space-y-6">
+              
+              {/* Fleet Analytics Summary header */}
+              <div className="bg-gray-900/40 border border-white/5 rounded-3xl p-6 space-y-4 shadow-2xl">
+                <div>
+                  <h3 className="font-extrabold text-base text-white">Driver Grading & Compliance Audit</h3>
+                  <span className="text-xs text-gray-400 font-medium">Monthly performance evaluations, rating status, and target compliance scores.</span>
+                </div>
+                <div className="grid grid-cols-3 gap-5 border-t border-white/5 pt-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Average Driver Compliance</span>
+                    <strong className="text-lg font-extrabold text-white block">86%</strong>
+                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-orange-500" style={{ width: '86%' }}></div>
                     </div>
                   </div>
-                ))}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Top Rated Route</span>
+                    <strong className="text-lg font-extrabold text-emerald-400 block">CBD to Ngong</strong>
+                    <span className="text-[10px] text-gray-400">Moses Ochieng (Grade A+)</span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Flagged Discrepancies</span>
+                    <strong className="text-lg font-extrabold text-orange-400 block">2 Drivers Warned</strong>
+                    <span className="text-[10px] text-gray-400">John Kamau & Peter Mwangi</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Driver Scorecards Grid */}
+              <div className="grid grid-cols-3 gap-5">
+                {matatus.map((m, idx) => {
+                  const compliance = m.reg === 'KCC 123D' ? 98 : m.reg === 'KAA 456B' ? 82 : 65;
+                  const grade = m.reg === 'KCC 123D' ? 'A+' : m.reg === 'KAA 456B' ? 'B-' : 'D-';
+                  const gradeColor = grade === 'A+' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : grade === 'B-' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-orange-500 bg-orange-500/10 border-orange-500/20';
+
+                  return (
+                    <div key={idx} className="bg-gray-900/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-orange-500/10 text-orange-400 flex items-center justify-center font-bold text-sm">
+                            {m.driverName.charAt(0)}
+                          </div>
+                          <div>
+                            <strong className="text-sm block text-white font-bold">{m.driverName}</strong>
+                            <span className="text-[10px] text-gray-400">{m.reg}</span>
+                          </div>
+                        </div>
+                        <span className={`text-[11px] font-black px-2.5 py-1 rounded-lg border ${gradeColor}`}>
+                          {grade}
+                        </span>
+                      </div>
+
+                      <div className="space-y-3 pt-2 text-xs">
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[10px] text-gray-400">
+                            <span>Target Compliance Rate</span>
+                            <span className="font-bold text-white">{compliance}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full ${compliance > 90 ? 'bg-emerald-400' : compliance > 70 ? 'bg-amber-400' : 'bg-orange-500'}`} 
+                              style={{ width: `${compliance}%` }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs border-t border-white/5 pt-3">
+                          <span className="text-gray-400">Accrued Leakage</span>
+                          <strong className={m.leakageVal > 1000 ? 'text-orange-500' : 'text-white'}>
+                            KES {m.leakageVal.toLocaleString()}
+                          </strong>
+                        </div>
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-gray-400">Rating Status</span>
+                          <span className={`text-[9px] font-bold uppercase tracking-wider ${grade === 'A+' ? 'text-emerald-400' : 'text-orange-400'}`}>
+                            {grade === 'A+' ? 'Top Performer' : 'Under Review'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
